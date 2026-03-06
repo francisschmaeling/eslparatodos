@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Put the Sentence in Order</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== ROOT COLORS & FONTS ===== */
+    :root {
+      --blue:    #2563eb;
+      --blue-lt: #dbeafe;
+      --green:   #16a34a;
+      --green-lt:#dcfce7;
+      --red:     #dc2626;
+      --red-lt:  #fee2e2;
+      --yellow:  #f59e0b;
+      --yellow-lt:#fef9c3;
+      --gray:    #f1f5f9;
+      --dark:    #1e293b;
+      --white:   #ffffff;
+      --radius:  16px;
+      --shadow:  0 4px 20px rgba(0,0,0,0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #fef9c3 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+      color: var(--dark);
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    header p.subtitle {
+      margin-top: 8px;
+      font-size: 1.15rem;
+      color: #475569;
+      font-weight: 600;
+    }
+    .emoji-row { font-size: 1.8rem; margin-top: 6px; }
+
+    /* ===== SCORE BAR ===== */
+    #score-bar {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .score-chip {
+      background: var(--white);
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip-label { color: #64748b; font-weight: 700; }
+
+    /* ===== QUIZ CARD ===== */
+    #quiz-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 640px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    #progress-wrap {
+      background: var(--gray);
+      border-radius: 99px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), #7c3aed);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== QUESTION NUMBER ===== */
+    .q-number {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    /* ===== SCRAMBLED WORDS ===== */
+    .scramble-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+    #word-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .word-chip {
+      background: var(--blue-lt);
+      color: var(--blue);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      border: 2px solid #bfdbfe;
+      line-height: 1;
+    }
+
+    /* ===== INPUT ===== */
+    .input-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 8px;
+      display: block;
+    }
+    #answer-input {
+      width: 100%;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 14px 18px;
+      border: 3px solid #cbd5e1;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.2s;
+      background: #f8fafc;
+      color: var(--dark);
+    }
+    #answer-input:focus { border-color: var(--blue); background: var(--white); }
+    #answer-input.correct-border { border-color: var(--green); }
+    #answer-input.wrong-border   { border-color: var(--red); }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 28px;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+    }
+    .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+    .btn-blue  { background: var(--blue);   color: var(--white); }
+    .btn-green { background: var(--green);  color: var(--white); }
+    .btn-yellow{ background: var(--yellow); color: var(--white); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    #btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== FEEDBACK BOX ===== */
+    #feedback {
+      display: none;
+      margin-top: 20px;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    #feedback.correct {
+      background: var(--green-lt);
+      border: 2px solid #86efac;
+      color: var(--green);
+    }
+    #feedback.wrong {
+      background: var(--red-lt);
+      border: 2px solid #fca5a5;
+      color: var(--red);
+    }
+    #feedback .answer-reveal {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--dark);
+      font-weight: 700;
+    }
+    #feedback .explanation {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #475569;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    #results-screen {
+      display: none;
+      background: var(--white);
+      border-radius: 24px;
+      padding: 40px 28px;
+      width: 100%;
+      max-width: 640px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    #results-screen h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    #results-screen .big-score {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--dark);
+      line-height: 1;
+      margin: 16px 0 6px;
+    }
+    #results-screen .pct {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #64748b;
+    }
+    #results-screen .message {
+      margin: 20px 0 28px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      #quiz-card, #results-screen { padding: 24px 18px; }
+      .btn { font-size: 1rem; padding: 13px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== PAGE HEADER ===== -->
+<header>
+  <h1>📝 Put the Sentence in Order</h1>
+  <p class="subtitle">Type the words in the correct order.</p>
+  <div class="emoji-row">⭐ Subject → Verb → Object ⭐</div>
+</header>
+
+<!-- ===== SCORE BAR ===== -->
+<div id="score-bar">
+  <div class="score-chip">
+    <span class="chip-label">✅ Correct:</span>
+    <span id="correct-count">0</span>
+  </div>
+  <div class="score-chip">
+    <span class="chip-label">❌ Wrong:</span>
+    <span id="wrong-count">0</span>
+  </div>
+  <div class="score-chip">
+    <span class="chip-label">📋 Question:</span>
+    <span id="q-counter">1 / 20</span>
+  </div>
+</div>
+
+<!-- ===== QUIZ CARD ===== -->
+<div id="quiz-card">
+
+  <!-- Progress bar at top of card -->
+  <div id="progress-wrap">
+    <div id="progress-fill" style="width: 0%"></div>
+  </div>
+
+  <!-- Question number label -->
+  <div class="q-number" id="q-label">Question 1 of 20</div>
+
+  <!-- Scrambled word chips -->
+  <p class="scramble-label">🔀 Scrambled parts:</p>
+  <div id="word-chips">
+    <!-- chips injected by JS -->
+  </div>
+
+  <!-- Student types answer here -->
+  <label class="input-label" for="answer-input">✏️ Type the correct sentence:</label>
+  <input
+    type="text"
+    id="answer-input"
+    placeholder="Type here and press Check…"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="none"
+    spellcheck="false"
+  />
+
+  <!-- Check & Next buttons -->
+  <div id="btn-row">
+    <button class="btn btn-blue" id="btn-check" onclick="checkAnswer()">✔ Check</button>
+    <button class="btn btn-green" id="btn-next" onclick="nextQuestion()" disabled>Next ➜</button>
+  </div>
+
+  <!-- Feedback box -->
+  <div id="feedback"></div>
+
+</div><!-- end #quiz-card -->
+
+<!-- ===== RESULTS SCREEN (hidden until end) ===== -->
+<div id="results-screen">
+  <div style="font-size: 3rem;">🏆</div>
+  <h2>Quiz Complete!</h2>
+  <div class="big-score" id="final-score">0 / 20</div>
+  <div class="pct" id="final-pct">0%</div>
+  <div class="message" id="final-message"></div>
+  <button class="btn btn-blue" onclick="restartQuiz()">🔄 Play Again</button>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+
+  // ============================================================
+  // QUESTION BANK
+  // Each object has:
+  //   parts   – the 3 scrambled chips shown to the student
+  //   answer  – the EXACT correct sentence (case-sensitive)
+  // ============================================================
+  const questions = [
+
+    // ---------- Set 1: Names + verb + object ----------
+    { parts: ["Brandon", "plays", "soccer"],
+      answer: "Brandon plays soccer." },
+
+    { parts: ["Alexa", "plays", "an instrument"],
+      answer: "Alexa plays an instrument." },
+
+    { parts: ["Maria", "drinks", "water"],
+      answer: "Maria drinks water." },
+
+    { parts: ["Carlos", "reads", "a book"],
+      answer: "Carlos reads a book." },
+
+    { parts: ["Sofia", "eats", "lunch"],
+      answer: "Sofia eats lunch." },
+
+    // ---------- Set 2: Pronouns + verb + object ----------
+    { parts: ["We", "eat", "breakfast"],
+      answer: "We eat breakfast." },
+
+    { parts: ["She", "writes", "a letter"],
+      answer: "She writes a letter." },
+
+    { parts: ["He", "kicks", "the ball"],
+      answer: "He kicks the ball." },
+
+    { parts: ["They", "watch", "a movie"],
+      answer: "They watch a movie." },
+
+    { parts: ["I", "do", "homework"],
+      answer: "I do homework." },
+
+    // ---------- Set 3: Mixed everyday actions ----------
+    { parts: ["The boy", "rides", "a bike"],
+      answer: "The boy rides a bike." },
+
+    { parts: ["The girl", "sings", "a song"],
+      answer: "The girl sings a song." },
+
+    { parts: ["My teacher", "gives", "homework"],
+      answer: "My teacher gives homework." },
+
+    { parts: ["The student", "opens", "the door"],
+      answer: "The student opens the door." },
+
+    { parts: ["We", "play", "basketball"],
+      answer: "We play basketball." },
+
+    // ---------- Set 4: School & home life ----------
+    { parts: ["Luis", "draws", "a picture"],
+      answer: "Luis draws a picture." },
+
+    { parts: ["Ana", "cooks", "dinner"],
+      answer: "Ana cooks dinner." },
+
+    { parts: ["They", "clean", "the house"],
+      answer: "They clean the house." },
+
+    { parts: ["She", "uses", "a computer"],
+      answer: "She uses a computer." },
+
+    { parts: ["He", "wears", "a uniform"],
+      answer: "He wears a uniform." }
+
+    // ============================================================
+    // ADDING MORE QUESTIONS IS EASY!
+    // Just copy the pattern above and add a comma after the last }.
+    // Example:
+    // { parts: ["David", "buys", "a sandwich"],
+    //   answer: "David buys a sandwich." },
+    // ============================================================
+  ];
+
+  // ===== GAME STATE =====
+  let currentIndex  = 0;   // which question we're on
+  let correctCount  = 0;   // number right
+  let wrongCount    = 0;   // number wrong
+  let answered      = false; // has the student already clicked Check?
+
+  // ===== SHUFFLE HELPER =====
+  // Randomises the order of the word chips each time
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ===== LOAD A QUESTION =====
+  function loadQuestion(index) {
+    const q = questions[index];
+    answered = false;
+
+    // -- update question label and progress --
+    const total = questions.length;
+    document.getElementById("q-label").textContent =
+      `Question ${index + 1} of ${total}`;
+    document.getElementById("q-counter").textContent =
+      `${index + 1} / ${total}`;
+    document.getElementById("progress-fill").style.width =
+      `${(index / total) * 100}%`;
+
+    // -- render scrambled chips --
+    const chipsDiv = document.getElementById("word-chips");
+    chipsDiv.innerHTML = "";
+    shuffle(q.parts).forEach(word => {
+      const chip = document.createElement("span");
+      chip.className = "word-chip";
+      chip.textContent = word;
+      chipsDiv.appendChild(chip);
+    });
+
+    // -- reset input & buttons --
+    const input = document.getElementById("answer-input");
+    input.value = "";
+    input.disabled = false;
+    input.className = "";          // remove color border
+    input.placeholder = "Type the sentence here…";
+    input.focus();
+
+    document.getElementById("btn-check").disabled = false;
+    document.getElementById("btn-next").disabled  = true;
+
+    // -- hide old feedback --
+    const fb = document.getElementById("feedback");
+    fb.style.display = "none";
+    fb.className = "";
+  }
+
+  // ===== CHECK THE ANSWER =====
+  function checkAnswer() {
+    if (answered) return;   // prevent double-checking
+    answered = true;
+
+    const q      = questions[currentIndex];
+    const raw    = document.getElementById("answer-input").value;
+    const typed  = raw.trim();   // remove leading/trailing spaces only
+    const correct = q.answer;
+
+    const input  = document.getElementById("answer-input");
+    const fb     = document.getElementById("feedback");
+    input.disabled = true;
+
+    if (typed === correct) {
+      // ---- CORRECT ----
+      correctCount++;
+      input.classList.add("correct-border");
+      fb.className = "correct";
+      fb.innerHTML =
+        `<strong>✅ Correct! Great job!</strong>
+         <div class="explanation">
+           💡 In English, we write: <em>Subject → Verb → Object</em>
+         </div>`;
+    } else {
+      // ---- WRONG ----
+      wrongCount++;
+      input.classList.add("wrong-border");
+      fb.className = "wrong";
+      fb.innerHTML =
+        `<strong>❌ Not quite. Try to remember the order!</strong>
+         <div class="answer-reveal">✔ Correct sentence: <em>${correct}</em></div>
+         <div class="explanation">
+           💡 In English, we usually write <em>Subject</em> first, then <em>Verb</em>, then <em>Object</em>.
+         </div>`;
+    }
+
+    fb.style.display = "block";
+
+    // -- update score chips --
+    document.getElementById("correct-count").textContent = correctCount;
+    document.getElementById("wrong-count").textContent   = wrongCount;
+
+    // -- enable Next button --
+    document.getElementById("btn-check").disabled = true;
+    document.getElementById("btn-next").disabled  = false;
+  }
+
+  // ===== NEXT QUESTION =====
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      loadQuestion(currentIndex);
+    } else {
+      showResults();
+    }
+  }
+
+  // ===== SHOW RESULTS =====
+  function showResults() {
+    // Hide quiz card, show results
+    document.getElementById("quiz-card").style.display  = "none";
+    document.getElementById("score-bar").style.display  = "none";
+    document.getElementById("results-screen").style.display = "block";
+
+    const total = questions.length;
+    const pct   = Math.round((correctCount / total) * 100);
+
+    document.getElementById("final-score").textContent = `${correctCount} / ${total}`;
+    document.getElementById("final-pct").textContent   = `${pct}%`;
+
+    // Encouraging message based on score
+    let msg = "";
+    if (pct === 100) {
+      msg = "🌟 Perfect score! You are amazing! 🌟";
+    } else if (pct >= 80) {
+      msg = "🎉 Excellent work! You really know your sentence order!";
+    } else if (pct >= 60) {
+      msg = "👍 Good job! Keep practicing — you are getting better every day!";
+    } else if (pct >= 40) {
+      msg = "💪 Nice try! Review the order: Subject → Verb → Object, and try again!";
+    } else {
+      msg = "😊 Don't give up! Every mistake helps you learn. Try again — you can do it!";
+    }
+
+    document.getElementById("final-message").textContent = msg;
+  }
+
+  // ===== RESTART QUIZ =====
+  function restartQuiz() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongCount   = 0;
+
+    document.getElementById("correct-count").textContent = 0;
+    document.getElementById("wrong-count").textContent   = 0;
+
+    document.getElementById("quiz-card").style.display     = "block";
+    document.getElementById("score-bar").style.display     = "flex";
+    document.getElementById("results-screen").style.display = "none";
+
+    loadQuestion(0);
+  }
+
+  // ===== ALLOW ENTER KEY TO CHECK ANSWER =====
+  document.getElementById("answer-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      if (!answered) {
+        checkAnswer();
+      } else {
+        nextQuestion();
+      }
+    }
+  });
+
+  // ===== START THE QUIZ =====
+  loadQuestion(0);
+
+</script>
+</body>
+</html>
