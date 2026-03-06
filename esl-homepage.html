@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My ESL Classroom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue:     #2563eb;
+      --blue-lt:  #dbeafe;
+      --green:    #16a34a;
+      --green-lt: #dcfce7;
+      --red:      #dc2626;
+      --red-lt:   #fee2e2;
+      --yellow:   #f59e0b;
+      --yellow-lt:#fef9c3;
+      --purple:   #7c3aed;
+      --purple-lt:#ede9fe;
+      --pink:     #db2777;
+      --pink-lt:  #fce7f3;
+      --gray:     #f1f5f9;
+      --dark:     #1e293b;
+      --white:    #ffffff;
+      --radius:   16px;
+      --shadow:   0 4px 20px rgba(0,0,0,0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #fef9c3 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 64px;
+      color: var(--dark);
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header .school-badge {
+      display: inline-block;
+      background: var(--white);
+      border-radius: 40px;
+      padding: 6px 20px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #64748b;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    header p.subtitle {
+      margin-top: 10px;
+      font-size: 1.15rem;
+      color: #475569;
+      font-weight: 600;
+    }
+    .emoji-row {
+      font-size: 2rem;
+      margin-top: 10px;
+      letter-spacing: 4px;
+    }
+
+    /* ===== SECTION LABEL ===== */
+    .section-label {
+      width: 100%;
+      max-width: 720px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      margin-top: 8px;
+      padding-left: 4px;
+    }
+
+    /* ===== ACTIVITY GRID ===== */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 40px;
+    }
+
+    /* ===== ACTIVITY CARD ===== */
+    .activity-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 28px 20px 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .activity-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.14);
+    }
+    .activity-card:active {
+      transform: translateY(0px);
+    }
+
+    .card-icon {
+      font-size: 2.6rem;
+      line-height: 1;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+    .card-desc {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* Color accents per card */
+    .card-blue   { border-top: 5px solid var(--blue);   }
+    .card-green  { border-top: 5px solid var(--green);  }
+    .card-yellow { border-top: 5px solid var(--yellow); }
+    .card-purple { border-top: 5px solid var(--purple); }
+    .card-pink   { border-top: 5px solid var(--pink);   }
+    .card-red    { border-top: 5px solid var(--red);    }
+
+    .card-blue   .card-title { color: var(--blue);   }
+    .card-green  .card-title { color: var(--green);  }
+    .card-yellow .card-title { color: var(--yellow); }
+    .card-purple .card-title { color: var(--purple); }
+    .card-pink   .card-title { color: var(--pink);   }
+    .card-red    .card-title { color: var(--red);    }
+
+    /* NEW badge */
+    .badge-new {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--yellow);
+      color: var(--white);
+      font-size: 0.65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 9px;
+      border-radius: 40px;
+    }
+
+    /* ===== COMING SOON CARD ===== */
+    .activity-card.coming-soon {
+      opacity: 0.55;
+      cursor: default;
+      pointer-events: none;
+    }
+    .badge-soon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--gray);
+      color: #94a3b8;
+      font-size: 0.65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 9px;
+      border-radius: 40px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .activity-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 320px) {
+      .activity-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="school-badge">🏫 Mr. Schmaeling's ESL Classroom</div>
+  <h1>Welcome to our classroom! 👋</h1>
+  <p class="subtitle">Choose an activity to get started.</p>
+  <div class="emoji-row">📚 ✏️ 🌍</div>
+</header>
+
+<!-- ===== QUIZZES ===== -->
+<div class="section-label">⚡ Quizzes &amp; Practice</div>
+<div class="activity-grid">
+
+  <a href="esl-word-order-quiz.html" class="activity-card card-blue">
+    <span class="badge-new">New!</span>
+    <div class="card-icon">📝</div>
+    <div class="card-title">Word Order Quiz</div>
+    <div class="card-desc">Put the sentence in the correct order.</div>
+  </a>
+
+  <div class="activity-card card-green coming-soon">
+    <span class="badge-soon">Soon</span>
+    <div class="card-icon">🔤</div>
+    <div class="card-title">Vocabulary Match</div>
+    <div class="card-desc">Match words to their meanings.</div>
+  </div>
+
+  <div class="activity-card card-yellow coming-soon">
+    <span class="badge-soon">Soon</span>
+    <div class="card-icon">🎧</div>
+    <div class="card-title">Listening Quiz</div>
+    <div class="card-desc">Listen and answer questions.</div>
+  </div>
+
+  <div class="activity-card card-purple coming-soon">
+    <span class="badge-soon">Soon</span>
+    <div class="card-icon">🔡</div>
+    <div class="card-title">Spelling Bee</div>
+    <div class="card-desc">Can you spell it correctly?</div>
+  </div>
+
+</div>
+
+<!-- ===== READING ===== -->
+<div class="section-label">📖 Reading &amp; Writing</div>
+<div class="activity-grid">
+
+  <div class="activity-card card-pink coming-soon">
+    <span class="badge-soon">Soon</span>
+    <div class="card-icon">📰</div>
+    <div class="card-title">Reading Passages</div>
+    <div class="card-desc">Read a short story and answer questions.</div>
+  </div>
+
+  <div class="activity-card card-red coming-soon">
+    <span class="badge-soon">Soon</span>
+    <div class="card-icon">✍️</div>
+    <div class="card-title">Writing Prompts</div>
+    <div class="card-desc">Practice writing with fun topics.</div>
+  </div>
+
+</div>
+
+
+</body>
+</html>
