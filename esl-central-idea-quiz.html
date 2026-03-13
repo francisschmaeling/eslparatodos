@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Idea Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue:     #2563eb;
+      --blue-lt:  #dbeafe;
+      --green:    #16a34a;
+      --green-lt: #dcfce7;
+      --red:      #dc2626;
+      --red-lt:   #fee2e2;
+      --yellow:   #f59e0b;
+      --yellow-lt:#fef9c3;
+      --purple:   #7c3aed;
+      --gray:     #f1f5f9;
+      --dark:     #1e293b;
+      --white:    #ffffff;
+      --radius:   16px;
+      --shadow:   0 4px 20px rgba(0,0,0,0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #fef9c3 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 64px;
+      color: var(--dark);
+    }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+      align-self: flex-start;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--white);
+      border-radius: 40px;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s;
+    }
+    .back-link:hover { transform: translateX(-2px); }
+
+    /* ===== HEADER ===== */
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    header p.subtitle {
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #475569;
+      font-weight: 600;
+    }
+    .emoji-row { font-size: 1.8rem; margin-top: 6px; }
+
+    /* ===== SCORE BAR ===== */
+    #score-bar {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .score-chip {
+      background: var(--white);
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip-label { color: #64748b; font-weight: 700; }
+
+    /* ===== QUIZ CARD ===== */
+    #quiz-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 660px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    #progress-wrap {
+      background: var(--gray);
+      border-radius: 99px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== QUESTION NUMBER ===== */
+    .q-number {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    /* ===== PASSAGE ===== */
+    .passage-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+    .passage-box {
+      background: var(--blue-lt);
+      border-left: 5px solid var(--blue);
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.7;
+      color: #1e3a5f;
+      margin-bottom: 22px;
+    }
+
+    /* ===== QUESTION TEXT ===== */
+    .question-stem {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* ===== ANSWER CHOICES ===== */
+    .choices-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .choice-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--gray);
+      border: 2.5px solid #cbd5e1;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.5;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--blue);
+      background: var(--blue-lt);
+      transform: translateX(3px);
+    }
+    .choice-btn .choice-letter {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: #64748b;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    /* States after answering */
+    .choice-btn.correct-choice {
+      background: var(--green-lt);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .choice-btn.correct-choice .choice-letter {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--white);
+    }
+    .choice-btn.wrong-choice {
+      background: var(--red-lt);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .choice-btn.wrong-choice .choice-letter {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+    }
+    .choice-btn.selected-choice {
+      background: var(--blue-lt);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .choice-btn.selected-choice .choice-letter {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+    .choice-btn.dimmed {
+      opacity: 0.4;
+    }
+    .choice-btn:disabled { cursor: default; transform: none; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 28px;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+    }
+    .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+    .btn-blue  { background: var(--blue);  color: var(--white); }
+    .btn-green { background: var(--green); color: var(--white); }
+    .btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    #btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    /* ===== FEEDBACK BOX ===== */
+    #feedback {
+      display: none;
+      margin-top: 18px;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    #feedback.correct {
+      background: var(--green-lt);
+      border: 2px solid #86efac;
+      color: var(--green);
+    }
+    #feedback.wrong {
+      background: var(--red-lt);
+      border: 2px solid #fca5a5;
+      color: var(--red);
+    }
+    #feedback .explanation {
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: #475569;
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    #results-screen {
+      display: none;
+      background: var(--white);
+      border-radius: 24px;
+      padding: 40px 28px;
+      width: 100%;
+      max-width: 660px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    #results-screen h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    #results-screen .big-score {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--dark);
+      line-height: 1;
+      margin: 16px 0 6px;
+    }
+    #results-screen .pct {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #64748b;
+    }
+    #results-screen .message {
+      margin: 20px 0 28px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    .results-btn-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-blue  { background: var(--blue);   color: var(--white); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      #quiz-card, #results-screen { padding: 22px 16px; }
+      .btn { font-size: 1rem; padding: 13px 22px; }
+      .passage-box { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back to Home</a>
+
+<!-- ===== PAGE HEADER ===== -->
+<header>
+  <h1>🧠 Central Idea Quiz</h1>
+  <p class="subtitle">Read the passage. Then choose the best answer.</p>
+  <div class="emoji-row">📖 💡 ✅</div>
+</header>
+
+<!-- ===== SCORE BAR ===== -->
+<div id="score-bar">
+  <div class="score-chip">
+    <span class="chip-label">✅ Correct:</span>
+    <span id="correct-count">0</span>
+  </div>
+  <div class="score-chip">
+    <span class="chip-label">❌ Wrong:</span>
+    <span id="wrong-count">0</span>
+  </div>
+  <div class="score-chip">
+    <span class="chip-label">📋 Question:</span>
+    <span id="q-counter">1 / 10</span>
+  </div>
+</div>
+
+<!-- ===== QUIZ CARD ===== -->
+<div id="quiz-card">
+
+  <div id="progress-wrap">
+    <div id="progress-fill" style="width: 0%"></div>
+  </div>
+
+  <div class="q-number" id="q-label">Question 1 of 10</div>
+
+  <p class="passage-label">📄 Read the passage:</p>
+  <div class="passage-box" id="passage-text"></div>
+
+  <div class="question-stem" id="question-stem"></div>
+
+  <div class="choices-list" id="choices-list"></div>
+
+  <div id="btn-row">
+    <button class="btn btn-blue" id="btn-check" onclick="checkAnswer()" disabled>✔ Check Answer</button>
+    <button class="btn btn-green" id="btn-next" onclick="nextQuestion()" disabled>Next ➜</button>
+  </div>
+
+  <div id="feedback"></div>
+
+</div>
+
+<!-- ===== RESULTS SCREEN ===== -->
+<div id="results-screen">
+  <div style="font-size: 3rem;">🏆</div>
+  <h2>Quiz Complete!</h2>
+  <div class="big-score" id="final-score">0 / 10</div>
+  <div class="pct" id="final-pct">0%</div>
+  <div class="message" id="final-message"></div>
+  <div class="results-btn-row">
+    <button class="btn btn-blue" onclick="restartQuiz()">🔄 Try Again</button>
+    <a href="index.html" class="btn btn-green">🏠 Home</a>
+  </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+
+  // ============================================================
+  // QUESTION BANK
+  // Each object:
+  //   passage   – the reading passage
+  //   stem      – the question stem
+  //   choices   – array of 4 answer choices (A–D)
+  //   correct   – index of correct choice (0 = A, 1 = B, etc.)
+  //   msgRight  – feedback shown when correct
+  //   msgWrong  – explanation shown when wrong
+  // ============================================================
+  const questions = [
+
+    {
+      passage: "Getting enough sleep is essential for teenagers to stay healthy and succeed in school. Many students stay awake late using phones or finishing homework. As a result, they feel tired during the school day. Lack of sleep can affect concentration and memory. Students who sleep more often perform better on tests.",
+      stem: "What is the central idea of the passage?",
+      choices: [
+        "Teenagers often use their phones late at night.",
+        "Getting enough sleep helps teenagers stay healthy and perform better in school.",
+        "Homework keeps many students awake at night.",
+        "Memory problems can occur when students are tired."
+      ],
+      correct: 1,
+      msgRight: "✅ Correct! The passage explains that sleep helps teenagers stay healthy and succeed in school.",
+      msgWrong: "The central idea is the author's main message. Several sentences describe how sleep affects concentration, memory, and school performance. These details all support the idea that getting enough sleep is important for teenagers."
+    },
+
+    {
+      passage: "Many students enjoy using technology in class. However, technology should be used carefully so it helps learning instead of causing distractions. Phones and computers can provide quick access to information. Teachers can also assign work online. When used responsibly, technology can support student learning.",
+      stem: "Which statement best expresses the author's main point?",
+      choices: [
+        "Technology should be used responsibly so it improves learning.",
+        "Teachers often assign homework online.",
+        "Students enjoy using phones and computers in school.",
+        "Technology provides quick access to information."
+      ],
+      correct: 0,
+      msgRight: "✅ Correct! The author explains that technology is helpful when it is used responsibly for learning.",
+      msgWrong: "The author describes several examples of technology in the classroom, but the main message is that technology should be used carefully so it helps learning rather than distracting students."
+    },
+
+    {
+      passage: "Teenagers often spend several hours each day using social media. They check messages, watch videos, and share pictures online. Spending too much time online can reduce the amount of time students spend studying. Students should limit their time on social media so they can focus more on school and personal goals. Managing time wisely is an important skill.",
+      stem: "What message does the author most clearly convey in the passage?",
+      choices: [
+        "Social media is a popular way for teenagers to communicate.",
+        "Students should reduce their time on social media to focus on important responsibilities.",
+        "Teenagers enjoy sharing pictures and watching videos online.",
+        "Studying is sometimes difficult for students."
+      ],
+      correct: 1,
+      msgRight: "✅ Correct! The author emphasizes that students should limit social media so they can focus on school and responsibilities.",
+      msgWrong: "The passage describes social media activities, but the main message is that too much time online can interfere with studying and goals. The author encourages students to manage their time wisely."
+    },
+
+    {
+      passage: "Many schools encourage students to participate in sports or physical activities. Exercise strengthens the body and improves mental health. Students who exercise regularly often feel less stressed. Physical activity can also improve sleep and concentration. For these reasons, regular exercise is important for teenagers.",
+      stem: "What is the central idea of the passage?",
+      choices: [
+        "Sports help schools build strong teams.",
+        "Exercise is beneficial for teenagers' physical and mental health.",
+        "Students sometimes feel stressed in school.",
+        "Physical activity can help people sleep better."
+      ],
+      correct: 1,
+      msgRight: "✅ Correct! The passage explains that exercise helps teenagers both physically and mentally.",
+      msgWrong: "The author provides several benefits of exercise, such as reducing stress and improving sleep and concentration. These details all support the idea that exercise is important for teenagers."
+    },
+
+    {
+      passage: "Many people believe reading is only important in school. However, reading helps people learn about new ideas and cultures. It also improves vocabulary and writing skills. Students who read frequently often become better communicators. Because of these benefits, students should make reading a daily habit.",
+      stem: "Which sentence best summarizes the passage?",
+      choices: [
+        "Students must read books in school every day.",
+        "Reading improves communication skills.",
+        "Reading has many benefits and should be practiced regularly.",
+        "Some people think reading is not important."
+      ],
+      correct: 2,
+      msgRight: "✅ Correct! The passage explains that reading has many benefits and should become a regular habit.",
+      msgWrong: "The author lists several benefits of reading, including learning new ideas, improving vocabulary, and becoming a better communicator. These details all support the main message that reading regularly is valuable."
+    },
+
+    {
+      passage: "Learning a new language can be difficult at first. Students must practice speaking, listening, reading, and writing. Making mistakes is a normal part of learning. Practicing a language every day is the most effective way to become fluent. Over time, students gain confidence and improve their communication skills.",
+      stem: "What is the main idea of the passage?",
+      choices: [
+        "Students sometimes feel nervous when learning a language.",
+        "Daily practice is the best way to become fluent in a language.",
+        "Learning new vocabulary takes time.",
+        "Students learn language skills in school."
+      ],
+      correct: 1,
+      msgRight: "✅ Correct! The passage explains that practicing every day helps students become fluent.",
+      msgWrong: "The passage describes challenges in learning a language but emphasizes that daily practice leads to improvement and confidence. That is the main message."
+    },
+
+    {
+      passage: "Healthy school lunches can help students stay focused and energized during the day. Some meals include fruits, vegetables, and whole grains. These foods provide important nutrients for growing bodies. When students eat healthy meals, they often have more energy for learning.",
+      stem: "What idea does the author emphasize in this passage?",
+      choices: [
+        "Students eat lunch at school every day.",
+        "Fruits and vegetables are served in many cafeterias.",
+        "Healthy school meals help students stay focused and energized.",
+        "Students need energy to participate in activities."
+      ],
+      correct: 2,
+      msgRight: "✅ Correct! The passage explains that healthy meals help students stay focused and energized.",
+      msgWrong: "The passage lists examples of healthy foods, but these details support the larger idea that healthy meals improve students' ability to learn and concentrate."
+    },
+
+    {
+      passage: "Many students work together during group projects. Sharing ideas can help students understand topics better. Group work also helps students practice communication and cooperation. Sometimes students may disagree about how to complete a task. Despite these challenges, group work helps students develop important teamwork skills.",
+      stem: "Which statement best expresses the author's main point?",
+      choices: [
+        "Group work helps students develop teamwork skills.",
+        "Students sometimes disagree during group projects.",
+        "Communication is important in school.",
+        "Teachers often assign group projects."
+      ],
+      correct: 0,
+      msgRight: "✅ Correct! The passage explains that group work helps students develop teamwork skills.",
+      msgWrong: "The author describes several aspects of group work, such as sharing ideas and communication. These details all support the main idea that group work helps students learn to work as a team."
+    },
+
+    {
+      passage: "Some students listen to music while they study. Music can sometimes help people relax and focus. However, loud music may distract students from their work. Different students study best in different environments. Students should choose a study environment that helps them concentrate the most.",
+      stem: "What is the central idea of the passage?",
+      choices: [
+        "Students enjoy listening to music while studying.",
+        "Loud music can distract students from studying.",
+        "Students should choose study environments that help them concentrate.",
+        "Music helps people relax."
+      ],
+      correct: 2,
+      msgRight: "✅ Correct! The author explains that students should choose study environments that help them concentrate.",
+      msgWrong: "The passage discusses music as one example, but the main message is broader: students should find a study environment that allows them to focus and learn effectively."
+    },
+
+    {
+      passage: "School rules exist to create a safe learning environment. Rules help teachers manage classrooms and prevent disruptions. Students are expected to follow these rules every day. When students respect school rules, classrooms run more smoothly. Following school rules helps create a positive environment where everyone can learn.",
+      stem: "Which statement best summarizes the passage?",
+      choices: [
+        "Teachers create rules for their classrooms.",
+        "Students sometimes break school rules.",
+        "School rules help create a safe and positive learning environment.",
+        "Classrooms run smoothly when teachers give instructions."
+      ],
+      correct: 2,
+      msgRight: "✅ Correct! The passage explains that school rules help create a safe and positive learning environment.",
+      msgWrong: "The passage describes how rules help teachers manage classrooms and prevent disruptions. These details all support the main idea that following school rules helps everyone learn."
+    }
+
+  ];
+
+  // ============================================================
+  // GAME STATE
+  // ============================================================
+  let currentIndex  = 0;
+  let correctCount  = 0;
+  let wrongCount    = 0;
+  let answered      = false;
+  let selectedIndex = -1;
+
+  const LETTERS = ["A", "B", "C", "D"];
+
+  // ============================================================
+  // LOAD A QUESTION
+  // ============================================================
+  function loadQuestion(index) {
+    const q = questions[index];
+    answered      = false;
+    selectedIndex = -1;
+
+    const total = questions.length;
+    document.getElementById("q-label").textContent   = `Question ${index + 1} of ${total}`;
+    document.getElementById("q-counter").textContent = `${index + 1} / ${total}`;
+    document.getElementById("progress-fill").style.width = `${(index / total) * 100}%`;
+
+    document.getElementById("passage-text").textContent = q.passage;
+    document.getElementById("question-stem").textContent = q.stem;
+
+    // Render answer choices
+    const list = document.getElementById("choices-list");
+    list.innerHTML = "";
+    q.choices.forEach((text, i) => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.innerHTML = `<span class="choice-letter">${LETTERS[i]}</span><span>${text}</span>`;
+      btn.addEventListener("click", () => selectChoice(i));
+      list.appendChild(btn);
+    });
+
+    // Reset buttons & feedback
+    document.getElementById("btn-check").disabled = true;
+    document.getElementById("btn-next").disabled  = true;
+    const fb = document.getElementById("feedback");
+    fb.style.display = "none";
+    fb.className = "";
+  }
+
+  // ============================================================
+  // HANDLE CHOICE SELECTION (highlight only — no reveal yet)
+  // ============================================================
+  function selectChoice(index) {
+    if (answered) return;
+
+    selectedIndex = index;
+    const btns = document.querySelectorAll(".choice-btn");
+    btns.forEach((b, i) => {
+      b.classList.remove("selected-choice");
+      if (i === index) b.classList.add("selected-choice");
+    });
+
+    // Enable the Check button now that a choice is selected
+    document.getElementById("btn-check").disabled = false;
+  }
+
+  // ============================================================
+  // CHECK ANSWER (called by button — reveals correct/wrong)
+  // ============================================================
+  function checkAnswer() {
+    if (answered || selectedIndex === -1) return;
+    answered = true;
+
+    const q    = questions[currentIndex];
+    const btns = document.querySelectorAll(".choice-btn");
+    const fb   = document.getElementById("feedback");
+
+    // Disable all choice buttons and the check button
+    btns.forEach(b => b.disabled = true);
+    document.getElementById("btn-check").disabled = true;
+
+    if (selectedIndex === q.correct) {
+      // --- CORRECT ---
+      correctCount++;
+      btns[selectedIndex].classList.remove("selected-choice");
+      btns[selectedIndex].classList.add("correct-choice");
+      fb.className = "correct";
+      fb.innerHTML = `<strong>${q.msgRight}</strong>`;
+    } else {
+      // --- WRONG ---
+      wrongCount++;
+      btns[selectedIndex].classList.remove("selected-choice");
+      btns[selectedIndex].classList.add("wrong-choice");
+      btns[q.correct].classList.add("correct-choice");
+      btns.forEach((b, i) => {
+        if (i !== selectedIndex && i !== q.correct) b.classList.add("dimmed");
+      });
+      fb.className = "wrong";
+      fb.innerHTML =
+        `<strong>❌ Not quite!</strong>
+         <div class="explanation">💡 ${q.msgWrong}</div>`;
+    }
+
+    fb.style.display = "block";
+
+    // Update score chips
+    document.getElementById("correct-count").textContent = correctCount;
+    document.getElementById("wrong-count").textContent   = wrongCount;
+
+    // Enable Next
+    document.getElementById("btn-next").disabled = false;
+  }
+
+  // ============================================================
+  // NEXT QUESTION
+  // ============================================================
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      loadQuestion(currentIndex);
+    } else {
+      showResults();
+    }
+  }
+
+  // ============================================================
+  // SHOW RESULTS
+  // ============================================================
+  function showResults() {
+    document.getElementById("quiz-card").style.display    = "none";
+    document.getElementById("score-bar").style.display   = "none";
+    document.getElementById("results-screen").style.display = "block";
+
+    const total = questions.length;
+    const pct   = Math.round((correctCount / total) * 100);
+
+    document.getElementById("final-score").textContent = `${correctCount} / ${total}`;
+    document.getElementById("final-pct").textContent   = `${pct}%`;
+
+    let msg = "";
+    if (pct === 100) {
+      msg = "🌟 Perfect score! You are an amazing reader! 🌟";
+    } else if (pct >= 80) {
+      msg = "🎉 Excellent work! You really understand how to find the central idea!";
+    } else if (pct >= 60) {
+      msg = "👍 Good job! Keep reading and practicing — you are getting better every day!";
+    } else if (pct >= 40) {
+      msg = "💪 Nice try! Remember: the central idea is the author's most important message. Try again!";
+    } else {
+      msg = "😊 Don't give up! Every mistake helps you learn. Read carefully and try again — you can do it!";
+    }
+
+    document.getElementById("final-message").textContent = msg;
+  }
+
+  // ============================================================
+  // RESTART QUIZ
+  // ============================================================
+  function restartQuiz() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongCount   = 0;
+
+    document.getElementById("correct-count").textContent = 0;
+    document.getElementById("wrong-count").textContent   = 0;
+
+    document.getElementById("quiz-card").style.display     = "block";
+    document.getElementById("score-bar").style.display     = "flex";
+    document.getElementById("results-screen").style.display = "none";
+
+    loadQuestion(0);
+  }
+
+  // ============================================================
+  // START THE QUIZ
+  // ============================================================
+  loadQuestion(0);
+
+</script>
+</body>
+</html>
